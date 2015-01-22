@@ -19,8 +19,6 @@ $param = [
 
 $content = '<br />';
 $content.= $url_manager->build_link('1','Auto Destruction', $param);
-$content.= '<br />';
-$content.= $url_manager->build_Path($param);
 
 
 include 'themes/theme.php';
