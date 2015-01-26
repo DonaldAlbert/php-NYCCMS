@@ -7,8 +7,17 @@
     </database-info>
     <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
     <schema name="" catalog="cms"/>
+    <table name="routes" schema="" catalog="cms" type="TABLE">
+      <column name="rid" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
+      <column name="action" sqlType="VARCHAR" precision="30" scale="0" nullable="false" jdbcType="12"/>
+      <column name="type" sqlType="VARCHAR" precision="30" scale="0" nullable="false" jdbcType="12"/>
+      <column name="id" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5"/>
+      <column name="status" sqlType="CHAR" precision="8" scale="0" nullable="false" jdbcType="1"/>
+      <column name="function" sqlType="VARCHAR" precision="50" scale="0" nullable="false" jdbcType="12"/>
+      <primary-key name="PRIMARY" columns="rid"/>
+    </table>
     <table name="users" schema="" catalog="cms" type="TABLE">
-      <column name="uid" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4"/>
+      <column name="uid" sqlType="INT" precision="10" scale="0" nullable="false" jdbcType="4" autoIncrement="true"/>
       <column name="uname" sqlType="VARCHAR" precision="15" scale="0" nullable="false" jdbcType="12"/>
       <column name="passwd" sqlType="VARCHAR" precision="15" scale="0" nullable="false" jdbcType="12"/>
       <column name="fname" sqlType="VARCHAR" precision="15" scale="0" nullable="true" jdbcType="12"/>
@@ -19,5 +28,8 @@
       <index name="unique_uid" unique="true" columns="uid"/>
       <index name="unique_uname" unique="true" columns="uname"/>
     </table>
+  </data-source>
+  <data-source name="MySQL - @localhost" uuid="8656442c-ad97-4a4f-b236-bf552c356948">
+    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
   </data-source>
 </component>

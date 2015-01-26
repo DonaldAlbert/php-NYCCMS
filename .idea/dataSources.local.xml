@@ -7,6 +7,10 @@
       <schema-pattern>cms.*</schema-pattern>
       <default-schemas>cms.*</default-schemas>
     </data-source>
+    <data-source name="MySQL - @localhost" uuid="8656442c-ad97-4a4f-b236-bf552c356948">
+      <secret-storage>master_key</secret-storage>
+      <first-sync>true</first-sync>
+    </data-source>
   </component>
 </project>
 
