@@ -16,9 +16,9 @@ class dBQuery
      */
     public function __construct()
     {
-            include "settings/settings.php";
-            $connection_string = "$dbtype:host=$host;dbname=$database";
-            $this->pdo = new PDO($connection_string, $username, $pass);
+        include("settings/settings.php");
+        $connection_string = "$dbtype:host=$host;dbname=$database";
+        $this->pdo = new PDO($connection_string, $username, $pass);
     }
 
 
