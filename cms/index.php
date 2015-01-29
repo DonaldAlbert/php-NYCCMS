@@ -1,24 +1,25 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: GRE-ENG
- * Date: 1/19/2015
- * Time: 8:41 PM
+ * User: Ioannis
+ * Date: 19-Jan-15
+ * Time: 8:56 PM
  */
-require_once 'includes/bootstrap.php';
+
+$content = "Hello World <br>";
+require_once("includes/bootstrap.php");
+boot();
+
+$url = new URL();
+var_dump($url->GetUrlComponents(True));
+echo $url->build_Path(array('action'=>"create",'type'=>"page"));
+
+echo "<br>".$url->build_Link("mylink", "My Link Text", array('action'=>"create",'type'=>"page") );
+
+Router::execute_Module($url);
 
 
-$url_manager = new URL();
-print_r($url_manager->GetUrlComponents());
-
-$param = [
-    'action'    => 'autodistruct',
-    'type'      => 'total',
-    'id'        => 'terminator',
-];
-
-$content = '<br />';
-$content.= $url_manager->build_link('1','Auto Destruction', $param);
 
 
-include 'themes/theme.php';
+
+?>

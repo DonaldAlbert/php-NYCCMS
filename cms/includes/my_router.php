@@ -35,7 +35,7 @@ class URLRouter {
     public function route($action) {
         $route = $this->routingTable[$action];
         if( array_key_exists('script', $route) ) {
-            include_once();
+            include_once('');
         }
     }
 } 

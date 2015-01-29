@@ -1,12 +1,13 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: GRE-ENG
- * Date: 1/22/2015
- * Time: 7:08 PM
+ * Date: 22-Jan-15
+ * Time: 1:35 PM
  */
 
-class URL {
+
+class URL
+{
     protected $action;
     protected $type;
     protected $id;
@@ -20,7 +21,7 @@ class URL {
 
     protected function validate_Get($variable)
     {
-        if( isset($_GET[$variable]) )
+        if (isset($_GET[$variable]))
         {
             $this->$variable = $_GET[$variable];
         }
@@ -30,49 +31,44 @@ class URL {
         }
     }
 
-    public function GetUrlComponents($indexed=True)
+    public function GetUrlComponents($indexed)
     {
-        if( $indexed === True )
+        if ($indexed==TRUE)
         {
-            return [
-                'action'=>$this->action,
-                'type'=>$this->type,
-                'id'=>$this->id,
-            ];
-        } elseif( $indexed === False )
+            return array("action" => $this->action, "type" => $this->type, "id" => $this->id );
+        }
+        else if ($indexed==FALSE)
         {
-            return [
-                $this->action,
-                $this->type,
-                $this->id,
-            ];
-        } else
+            return array ($this->action, $this->type, $this->id);
+        }
+        else
         {
-            return False;
+            return FALSE;
         }
     }
 
     public function build_Path(array $url_components_array)
     {
-        $url = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'].'?';
-        $url.='action='.$url_components_array['action'];
-        if( isset($url_components_array['type']) )
+        $url = "http://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']."?";
+        $url.="action=".$url_components_array['action'];
+        if (isset($url_components_array['type']))
         {
-            $url.='&type='.$url_components_array['type'];
+            $url.="&type=".$url_components_array['type'];
         }
-        if( isset($url_components_array['id']) )
+        if (isset($url_components_array['id']))
         {
-            $url.='&id='.$url_components_array['id'];
+            $url.="&id=".$url_components_array['id'];
         }
-
         return $url;
     }
 
-    public function build_link($link_id, $link_text, array $url_components_array)
+    public function build_Link($link_id, $link_text, array $url_components_array)
     {
-        $link = $this->build_Path($url_components_array);
-        $link = "<a id='$link_id' href='$link'>$link_text</a>";
-
+        $link = "<a id='$link_id' href='";
+        $link .= $this->build_Path($url_components_array);
+        $link .= "'>".$link_text."</a>";
         return $link;
     }
 }
+
+?>

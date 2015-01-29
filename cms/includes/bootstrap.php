@@ -1,10 +1,28 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: GRE-ENG
- * Date: 1/19/2015
- * Time: 8:51 PM
+ * Date: 19-Jan-15
+ * Time: 8:50 PM
  */
 
-require_once 'theme_engine.php';
-require_once 'url_class.php';
+global $content;
+/**
+ *Bootloader function
+ */
+function boot ()
+{
+//    include("theme_engine.php");
+//    include("url_class.php");
+//    include("pdo_class.php");
+
+    $includes = glob ("includes/*");
+    foreach ($includes as $file )
+    {
+       if (is_readable($file) && !is_uploaded_file($file))
+       {
+           include_once($file);
+       }
+    }
+
+    include("themes/theme.php");
+}
+?>
