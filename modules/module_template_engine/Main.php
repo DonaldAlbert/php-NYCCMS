@@ -12,7 +12,7 @@ class Module_Template_Engine implements ModulesCoreModule
 {
   public function onLoad() {
     echo 'Loading Template Engine <br/>'."\n"; 
-    ModulesCore::getInstance()->addInterface('Module_Routing_Engine', new RoutingListener);
+    ModulesCore::getInstance()->registerInterface('Module_Routing_Engine', new RoutingListener);
   }
   
   

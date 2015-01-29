@@ -114,7 +114,7 @@ class ModulesCore
     }
     
     
-    public function addInterface($modName, $ifObj)
+    public function registerInterface($modName, $ifObj)
     {
       if( !array_key_exists($modName, $this->implementedInterfaces) ||
           ( array_key_exists($modName, $this->implementedInterfaces) &&
@@ -129,7 +129,7 @@ class ModulesCore
     }
     
     
-    public function removeInterface($modName, $ifObj)
+    public function unregisterInterface($modName, $ifObj)
     {
       if( array_key_exists($modName, $this->implementedInterfaces) &&
           in_array($ifObj, $this->implementedInterfaces[$modName]) 

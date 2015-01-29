@@ -8,5 +8,5 @@ $dbtype = "mysql";
 $host = "localhost";
 $database = "cms";
 $username= "root";
-$pass = "root1234";
+$pass = "";
 ?>
