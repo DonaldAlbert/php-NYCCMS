@@ -18,6 +18,7 @@ class ModulesCore
     private $modules = [];
     private $implementedInterfaces = [];
     private $moduleDir = ModulesCore::MODULES_DIR;
+    private $lazyLoadModules = true;
     
     
     /**
@@ -78,6 +79,19 @@ class ModulesCore
     
     
     /**
+    * When lazy module loading is set to true, if a user tries to get a 
+    * module (via the getModule method) which is not loaded, the system 
+    * will load the module at that time instead of returning a false value.
+    * 
+    * @param boolean $value Default(true). The new status of the feature.
+    */
+    public function lazyLoadModules($value = true)
+    {
+      $this->lazyLoadModules = (bool) $value;
+    }
+    
+    
+    /**
     * Given the name of the module (case sensitive) this method
     * will return the relative path of the modules folder.
     * Note: This method assumes the same base dir as the MODULES_DIR class
@@ -129,12 +143,11 @@ class ModulesCore
       return $result;
     }
     
-    //====================================================================
-    // vvv - TODO - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    //====================================================================
     
     /**
-    * Loads the Main.php script of a module.
+    * Loads the Main.php script of a module. This method also invokes the 
+    * module's onLoad method.
+    * TODO: Implement failsafes for possible errors during new module import.
     * 
     * @param $modName The module name.
     * @return boolean True if the script was included successfully.
@@ -144,12 +157,19 @@ class ModulesCore
       if( !array_key_exists($modName, $this->modules) &&
           $this->validateModuleName($modName) &&
           $this->moduleExists($modName) 
-      ) {
+      ) 
+      {
         require_once($this->getModuleMain($modName));
+        if( !is_subclass_of($modName ,'ModulesCoreModule') )
+          throw new Exception('Module class '.$modName.
+              ' not implementing ModulesCoreModule interface'
+          );
         $this->modules[$modName] = new $modName();
+        
         try {
           $this->modules[$modName]->onLoad($this);
         } catch (Exception $e) {}
+        
         return True;
       }
       
@@ -167,25 +187,44 @@ class ModulesCore
     {
       if( !array_key_exists($modName, $this->implementedInterfaces) &&
           $this->validateModuleName($modName) &&
-          $this->moduleExists($modName) 
-      ) {
-        require_once($this->getModuleInterface($modName));
-        $this->implementedInterfaces[$modName] = [];
-        return True;
+          $this->moduleExists($modName) &&
+          file_exists($this->getInterfaceName($modName))
+      )
+      {
+          require_once($this->getModuleInterface($modName));
+          $this->implementedInterfaces[$modName] = [];
+          return True;
       }
       
       return False;
     }
     
     
+    /**
+    * Use this method to get the instance of a loaded module. If the module
+    * is not currently loaded and lazy module loading feature is enabled
+    * (i.e. $this->lazyLoadModules(true);), this method will try to load
+    * the module first then it will return it.
+    * 
+    * @param $modName The name of the module we want to get.
+    * @return mixed The found module(ModulesCoreModule) or false if the 
+    *     requested module could not be found.
+    */
     public function getModule($modName)
     {
       if( array_key_exists($modName, $this->modules) )
         return $this->modules[$modName];
-      
+      elseif( $this->lazyLoadModules &&
+              $this->loadModule($modName) 
+      )
+        return $this->modules[$modName];
+    
       return false;
     }
     
+    //====================================================================
+    // vvv - TODO - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    //====================================================================
     
     public function registerInterface($modName, $ifObj)
     {
