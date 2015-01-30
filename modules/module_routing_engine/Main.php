@@ -10,8 +10,10 @@
  */
 class Module_Routing_Engine implements ModulesCoreModule
 {
-  public function onLoad() { echo 'Loading Routing Engine <br/>'."\n"; }
+  public function onLoad(ModulesCore $core) { echo 'Loading Routing Engine <br/>'."\n"; }
   
+  
+  public function onLoadingDone(ModulesCore $core) {}
   
   
   public function routingMethod1($arg) {
