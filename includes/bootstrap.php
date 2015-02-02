@@ -10,19 +10,28 @@ global $content;
  */
 function boot ()
 {
-//    include("theme_engine.php");
-//    include("url_class.php");
-//    include("pdo_class.php");
+    global $content;
+    $content = null;
+    fileloader("includes/classes/*");
+    fileloader("includes/misc/*");
+    $url = new URL();
+    Router::execute_Module($url, null);
+    include("themes/theme.php");
+}
 
-    $includes = glob ("includes/*");
+    /**
+     * Functiion to load files from given path
+     * @param $path
+     */
+    function fileloader($path)
+{
+    $includes = glob ("$path");
     foreach ($includes as $file )
     {
-       if (is_readable($file) && !is_uploaded_file($file))
-       {
-           include_once($file);
-       }
+        if (is_readable($file) && !is_uploaded_file($file))
+        {
+            include_once($file);
+        }
     }
-
-    include("themes/theme.php");
 }
 ?>
