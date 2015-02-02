@@ -7,7 +7,7 @@
 function create_page($args)
 {
 
-    $content .=  " create_page With $args";
+    $content =  " create_page With $args";
     $content .= something($args);
     content($content);
 }

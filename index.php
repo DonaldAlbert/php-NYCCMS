@@ -7,6 +7,10 @@
  */
 
 
+$start_time = microtime(true);
+
+
+
 require_once("includes/bootstrap.php");
 boot();
 
@@ -18,4 +22,9 @@ boot();
     $url= new URL();
     $url->writeURL(array('action'=>"add",'type'=>null,'id'=>null));
 Redirection::Redirect($url);
+
+
+
+$duration = round((microtime(true)-$start_time)*1000, 3);
+echo "\n<br /><div style=\"text-align: center; font-family: monospace; color: dimgray;\">Overall time: <b>$duration ms</b></div>";
 ?>
