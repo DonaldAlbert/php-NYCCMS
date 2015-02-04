@@ -2,12 +2,31 @@
 /**
  * Date: 23-Jan-15
  * Time: 4:23 PM
+ * Author: DonaldAlbert
  */
 
+  //============================================================================
+  // vvv - TODO - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+  // 1) Allow modules to use namespaces.
+  // 2) Implement decoupled implementations of interfaces. i.e. The interfaces
+  //    and their implementations are included only if both modules are loaded.
+  // 4) 
+  //============================================================================
+    
+
+ 
  
 /**
- * Class dBQuery
- * Sends Queries to the Database
+ * Class ModulesCore
+ * Implements the module system of the CMS.
+ * Current features:
+ *    - Each module provides one main class and one interface.
+ *    - All the provided interfaces are loaded initially, even if the 
+ *      corresponding module is not loaded.
+ *    - All the modules are found inside their own folder (with the name of 
+ *      the module) which is inside the folder $modulesDir.
+ *    - The modules names are matching "^[a-zA-Z_][a-zA-Z0-9_]*$".
+ *     
  */
 class ModulesCore
 {
@@ -222,10 +241,16 @@ class ModulesCore
       return false;
     }
     
-    //====================================================================
-    // vvv - TODO - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    //====================================================================
     
+    /**
+    * Use this method to "inform" a module about an implementation of an 
+    * interface it provides.
+    * 
+    * @param String $modName The name of the module that provides the interface.
+    * @param Object $idObj An instance of a class that implements the interface that 
+    *   we are registering.
+    * @return boolean True if the module was registered successfully.
+    */
     public function registerInterface($modName, $ifObj)
     {
       if( !array_key_exists($modName, $this->implementedInterfaces) ||
@@ -241,6 +266,15 @@ class ModulesCore
     }
     
     
+    /**
+    * Use this method to unregister a previously registered implementation of an
+    * interface.
+    * 
+    * @param String $modName The name of the module that provides the interface.
+    * @param Object $ifObj The object that implements the interface which we
+    *   want to remove.
+    * @return Boolean True if the implementation was removed successfully.
+    */
     public function unregisterInterface($modName, $ifObj)
     {
       if( array_key_exists($modName, $this->implementedInterfaces) &&
@@ -255,6 +289,15 @@ class ModulesCore
     }
     
     
+    /**
+    * Use this method to get all registered implementations of an interface
+    * provided by a specific module.
+    * 
+    * @param String $modName The name of the module that provides the interface 
+    *   of which the implementations we want.
+    * @return array An array with objects implementing the 
+    * 
+    */
     public function getInterfaces($modName)
     {
       if( array_key_exists($modName, $this->implementedInterfaces) ) 
@@ -266,6 +309,10 @@ class ModulesCore
     }
     
     
+    /**
+    * Use this method to load all the interfaces that can be found in the file
+    * system.
+    */
     public function loadInterfaces(){
       if( $handle = opendir($this->moduleDir) ) {
         
@@ -290,9 +337,21 @@ class ModulesCore
 }
 
 
+/**
+* An interface that all the modules should implement.
+*/
 interface ModulesCoreModule {
+  public function getModuleName();
   public function onLoad(ModulesCore $core);
   public function onLoadingDone(ModulesCore $core);
+}
+
+
+/**
+* An interface that all the module interfaces should extend.
+*/
+interface ModulesCoreInterface {
+  public function getImplementingModule();
 }
 
 ?>
