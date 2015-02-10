@@ -6,11 +6,11 @@
  */
 
   //============================================================================
-  // vvv - TODO - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-  // 1) Allow modules to use namespaces.
-  // 2) Implement decoupled implementations of interfaces. i.e. The interfaces
+  // vvv - T O D O  - vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+  // 1) TODO Allow modules to use namespaces.
+  // 2) TODO Implement decoupled implementations of interfaces. i.e. The interfaces
   //    and their implementations are included only if both modules are loaded.
-  // 4) 
+  // 3) TODO Build block functionality on the template engine 
   //============================================================================
     
 
@@ -33,9 +33,7 @@ class ModulesCore
     const MODULES_DIR = "modules/";
     
     private static $instance;
-    
     private $modules = [];
-    private $implementedInterfaces = [];
     private $moduleDir = ModulesCore::MODULES_DIR;
     private $lazyLoadModules = true;
     
@@ -54,31 +52,6 @@ class ModulesCore
       return ModulesCore::$instance;
     }
     
-    
-    /**
-    * Use this method to get the name of the module's interface
-    * from the module's folder name.
-    * 
-    * @return String The name of the module's interface.
-    */
-    public static function Folder2Interface($foldername)
-    {
-      return $foldername.'Interface';
-    }
-    
-    
-    /**
-    * Use this method to get the folder's name from the
-    * name of the modules interface.
-    * 
-    * @return String The name of the module's folder.
-    */
-    public static function Interface2Folder($foldername)
-    {
-      return substr($foldername, 0, -9);
-    }
-    
-    
     /**
     * Use this method to validate the name of the module.
     * This name is applied to both module's folder, module's
@@ -91,7 +64,7 @@ class ModulesCore
     public static function validateModuleName($modName) 
     { 
       //^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$ Valid classname reqexp.
-      $regexp = '/^[a-zA-Z_][a-zA-Z0-9_]*$/';
+      $regexp = '/^([a-zA-Z_][a-zA-Z0-9_]*\.)*[a-zA-Z_][a-zA-Z0-9_]*$/';
       $result = preg_match($regexp, $modName);
       return ($result === 1);
     }
@@ -130,19 +103,26 @@ class ModulesCore
     */
     public function getModuleMain($modName)
     {
-      return $this->getModuleDir($modName).'\Main.php';
+      return $this->getModuleDir($modName).'/Main.php';
     }
     
     
     /**
-    * Given the name of the module (case sensitive) this method
-    * will return the relative path of the modules main script.
-    * Note: This method assumes the same base dir as the MODULES_DIR class
-    *   constant.
-    */
-    public function getModuleInterface($modName)
-    {
-      return $this->getModuleDir($modName).'\Interface.php';
+     * User this method to get the namespace of the module's main class.
+     */
+    public function getModuleNamespace($modName) {
+      $result = $this->getModuleClass($modName);
+      $pos = strrpos($result, '\\');
+      
+      return substr($result, 0, $pos); 
+    }
+    
+    
+    /**
+     * Use this method to get the module's main class fully classified name.
+     */
+    public function getModuleClass($modName) {
+      return str_replace('.', '\\', $modName);
     }
     
     
@@ -179,40 +159,18 @@ class ModulesCore
       ) 
       {
         require_once($this->getModuleMain($modName));
-        if( !is_subclass_of($modName ,'ModulesCoreModule') )
-          throw new Exception('Module class '.$modName.
+        $className = $this->getModuleClass($modName);
+        if( !is_subclass_of($className ,'ModulesCoreModule') )
+          throw new Exception('Module class '.$className.
               ' not implementing ModulesCoreModule interface'
           );
-        $this->modules[$modName] = new $modName();
+        $this->modules[$modName] = new $className();
         
         try {
           $this->modules[$modName]->onLoad($this);
         } catch (Exception $e) {}
         
         return True;
-      }
-      
-      return False;
-    }
-    
-    
-    /**
-    * Loads the Interface.php script of a module.
-    * 
-    * @param $modName The module name.
-    * @return boolean True if the script was included successfully.
-    */
-    public function loadInterface($modName)
-    {
-      if( !array_key_exists($modName, $this->implementedInterfaces) &&
-          $this->validateModuleName($modName) &&
-          $this->moduleExists($modName) &&
-          file_exists($this->getInterfaceName($modName))
-      )
-      {
-          require_once($this->getModuleInterface($modName));
-          $this->implementedInterfaces[$modName] = [];
-          return True;
       }
       
       return False;
@@ -241,99 +199,6 @@ class ModulesCore
       return false;
     }
     
-    
-    /**
-    * Use this method to "inform" a module about an implementation of an 
-    * interface it provides.
-    * 
-    * @param String $modName The name of the module that provides the interface.
-    * @param Object $idObj An instance of a class that implements the interface that 
-    *   we are registering.
-    * @return boolean True if the module was registered successfully.
-    */
-    public function registerInterface($modName, $ifObj)
-    {
-      if( !array_key_exists($modName, $this->implementedInterfaces) ||
-          ( array_key_exists($modName, $this->implementedInterfaces) &&
-            !in_array($ifObj, $this->implementedInterfaces[$modName])
-          )
-      ) {
-        $this->implementedInterfaces[$modName][] = $ifObj;
-        return true;
-      }
-      
-      return false;
-    }
-    
-    
-    /**
-    * Use this method to unregister a previously registered implementation of an
-    * interface.
-    * 
-    * @param String $modName The name of the module that provides the interface.
-    * @param Object $ifObj The object that implements the interface which we
-    *   want to remove.
-    * @return Boolean True if the implementation was removed successfully.
-    */
-    public function unregisterInterface($modName, $ifObj)
-    {
-      if( array_key_exists($modName, $this->implementedInterfaces) &&
-          in_array($ifObj, $this->implementedInterfaces[$modName]) 
-      ) {
-        $key = array_search($ifObj, $this->implementedInterfaces[$modName], true);
-        unset($this->implementedInterfaces[$modName][$key]);
-        return true;
-      }
-      
-      return false;
-    }
-    
-    
-    /**
-    * Use this method to get all registered implementations of an interface
-    * provided by a specific module.
-    * 
-    * @param String $modName The name of the module that provides the interface 
-    *   of which the implementations we want.
-    * @return array An array with objects implementing the 
-    * 
-    */
-    public function getInterfaces($modName)
-    {
-      if( array_key_exists($modName, $this->implementedInterfaces) ) 
-      {
-        return $this->implementedInterfaces[$modName];
-      }
-      
-      return false;
-    }
-    
-    
-    /**
-    * Use this method to load all the interfaces that can be found in the file
-    * system.
-    */
-    public function loadInterfaces(){
-      if( $handle = opendir($this->moduleDir) ) {
-        
-        try {
-          while( $entry = readdir($handle) ) {
-            if( substr($entry, 0, 1) == '.' ) continue;
-          
-            $dir = $this->moduleDir . $entry . '/';
-            $interface = $dir.'Interface.php';
-            if( file_exists($interface) &&
-                !is_dir($interface)
-            ) {
-              include_once($interface);
-            }
-          }
-        } catch (Exception $e) {}
-
-        closedir($handle);
-      }
-    }
-    
 }
 
 
@@ -354,4 +219,3 @@ interface ModulesCoreInterface {
   public function getImplementingModule();
 }
 
-?>
