@@ -4,6 +4,8 @@
  * Time: 8:50 PM
  */
 
+if( !defined('CMS_ROOT') ) die();
+
 global $content;
 /**
  *Bootloader function
@@ -11,7 +13,7 @@ global $content;
 function boot ()
 {
     global $content;
-    $content = null;
+//    $content = null;
     fileloader("includes/classes/*");
     fileloader("includes/misc/*");
     $url = new URL();

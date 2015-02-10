@@ -11,17 +11,27 @@ $start_time = microtime(true);
 
 
 
-require_once("includes/bootstrap.php");
-boot();
+
+define('CMS_ROOT', $_SERVER['DOCUMENT_ROOT']);
+require_once('includes/bootstrap.php');
+//boot();
 
 
 //var_dump($url->GetUrlComponents(True));
 //echo $url->build_Path(array('action'=>"create",'type'=>"page"));
 //echo "<br>".$url->build_Link("mylink", "My Link Text", array('action'=>"create",'type'=>"page") );
 
-    $url= new URL();
-    $url->writeURL(array('action'=>"add",'type'=>null,'id'=>null));
-Redirection::Redirect($url);
+//    $url= new URL();
+//    $url->writeURL(array('action'=>"add",'type'=>null,'id'=>null));
+//    Redirection::Redirect($url);
+require_once('includes/classes/theme_engine.php');
+$my_content = [
+  'h2' => 'some more text',
+];
+$te = ThemeEngine::getInstance();
+$te->addCss('css/common.css');
+$te->renderTheme('index', $my_content);
+
 
 
 
