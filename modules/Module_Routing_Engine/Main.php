@@ -10,17 +10,24 @@
  */
 class Module_Routing_Engine implements ModulesCoreModule
 {
-  public function onLoad(ModulesCore $core) { echo 'Loading Routing Engine <br/>'."\n"; }
+  public function getModuleName() { return 'Module_Routing_Engine';}
+  
+  
+  public function onLoad(ModulesCore $core) {
+    echo 'Loading Routing Engine <br/>'."\n"; 
+  }
   
   
   public function onLoadingDone(ModulesCore $core) {}
   
   
+  public function getInterfaces() {}
+  
+  
+  public function loadInterface($moduleName) {}
+  
+  
   public function routingMethod1($arg) {
-    $ifs = ModulesCore::getInstance()->getInterfaces('Module_Routing_Engine');
-    foreach( $ifs as $if )
-      $if->routingEvent1();
-    
     echo "Running routingMethod1 with arg='$arg' <br/>\n";
   }  
   
