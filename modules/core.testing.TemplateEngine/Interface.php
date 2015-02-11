@@ -3,9 +3,9 @@
  * Date: 23-Jan-15
  * Time: 4:23 PM
  */
-
+namespace core\testing;
  
-interface Module_Template_EngineInterface
+interface TemplateEngineInterface
 {
   public function event1();
 }

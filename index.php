@@ -42,9 +42,12 @@ $modMgr = ModulesCore::getInstance();
 $modMgr->loadModule('core.testing.TemplateEngine');
 $modMgr->loadModule('core.testing.TemplateEngine'); // Ignored, cause it is already loaded.
 $modMgr->loadModule('Module_Routing_Engine');
+$modMgr->loadInterfaces();
+$modMgr->dumpIfs();
 
 $tplMod = $modMgr->getModule('core.testing.TemplateEngine');
 $tplMod->templateMethod1('value1');
+$tplMod->templateMethod2('value1');
 
 $tplMod = $modMgr->getModule('Module_Routing_Engine');
 $tplMod->routingMethod1('value1');

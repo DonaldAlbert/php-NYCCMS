@@ -10,10 +10,50 @@
  */
 class Module_Routing_Engine implements ModulesCoreModule
 {
+  private $impl = null;
+  
   public function getModuleName() { return 'Module_Routing_Engine';}
   
   
+  public function getModuleVersion() { return '0.0'; }
+  
+  
+  public function getCompatibility() { return ['0.0',]; }
+  
+  
+  public function getImplementation($providingModule, $version=null ) {
+    switch ($providingModule) {
+        case 'core.testing.TemplateEngine':
+          if( !$this->impl ) {
+            require_once('core.testing.TemplateEngineImpl.php');
+            return new TemplateEngineImpl();
+          } else
+            return $this->impl; 
+          break;
+      
+        default:
+          return null; 
+          break;
+    }
+  }
+  
+  
+  public function getImplementationVersions($providingModule) {
+    switch ($providingModule) {
+      case 'core.testing.TemplateEngine':
+        return ['0.0'];
+    
+      default:
+        return []; 
+    } 
+  }
+  
+  
+  public function loadInterface() {}
+
+  
   public function onLoad(ModulesCore $core) {
+    $core->registerImplementedInterface('core.testing.TemplateEngine', $this->getModuleName());
     echo 'Loading Routing Engine <br/>'."\n"; 
   }
   
@@ -22,9 +62,6 @@ class Module_Routing_Engine implements ModulesCoreModule
   
   
   public function getInterfaces() {}
-  
-  
-  public function loadInterface($moduleName) {}
   
   
   public function routingMethod1($arg) {

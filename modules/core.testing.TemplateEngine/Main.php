@@ -16,12 +16,30 @@ class TemplateEngine implements \ModulesCoreModule
   public function getModuleName() { return 'core.testing.TemplateEngine'; }
   
   
+  public function getModuleVersion() { return '0.0'; }
+  
+  
+  public function getCompatibility() { return ['0.0',]; }
+  
+  
+  public function getImplementation($providingModule, $version=null ) { return null; }
+  
+  
+  public function getImplementationVersions($providingModule) { return []; }
+  
+  
+  public function loadInterface() { require_once('Interface.php'); }
+  
+  
   public function onLoad(\ModulesCore $core) {
+    $core->registerProvidedInterface($this->getModuleName());
     echo 'Loading Template Engine <br/>'."\n"; 
   }
   
   
   public function onLoadingDone(\ModulesCore $core) {}
+  
+  
   
   
   public function templateMethod1($arg) {
@@ -31,6 +49,9 @@ class TemplateEngine implements \ModulesCoreModule
   
   public function templateMethod2($arg) {
     echo "Running templateMethod2 with arg='$arg' <br/>\n";
+    $listeners = \ModulesCore::getInstance()->getImplementations($this->getModuleName());
+    foreach( $listeners as $listener )
+      $listener->event1();
   }  
   
   

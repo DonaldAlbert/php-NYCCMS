@@ -37,6 +37,39 @@ class ModulesCore
     private $moduleDir = ModulesCore::MODULES_DIR;
     private $lazyLoadModules = true;
     
+    /**
+     * An array which holds data about interfaces with the following format.
+     *
+     * [
+     *   'moduleName' => [
+     *     'provided' => ['ver1', 'ver2'],
+     *     'implemented' => [
+     *       'otherModule' => ['ver2', 'ver3'],
+     *     ],
+     *     'loaded' => [
+     *       'moduleName' => ['ifInstance1','ifInstance2','ifInstance2'],
+     *     ],
+     *   ],
+     * ];
+     */
+    private $interfaces = [];
+    
+    
+    /**
+     * CAUTION: If the module record already exists this method will overwrite 
+     * it.
+     */
+    private function &initInterfaceRecord($moduleName){
+      $temp = [
+        'provided' => [],
+        'implemented' => [],
+        'loaded' => [],
+      ];
+      $this->interfaces[$moduleName] = &$temp; 
+      
+      return $temp;
+    }
+    
     
     /**
     * Use this to get the single instance of the ModulesCore.
@@ -199,6 +232,116 @@ class ModulesCore
       return false;
     }
     
+    
+    
+    /**
+     * Use this method to designate a module as an interface provider.
+     * 
+     * @param String The name of the module that provides the interface.
+     * 
+     * @return boolean true if the operation was successful, false if the 
+     *  given module is already marked as an interface provider or an
+     *  invalid module name was given.
+     */
+    public function registerProvidedInterface($moduleName){
+      if( !$this->validateModuleName($moduleName) )
+        return false;
+      
+      if( !key_exists($moduleName, $this->interfaces) )
+        $temp = &$this->initInterfaceRecord($moduleName);
+      else 
+        $temp = &$this->interfaces[$moduleName];
+      
+      if( count($temp['provided']) == 0 ) {
+        $temp['provided'] = $this->getModule($moduleName)->getCompatibility();
+      }
+      else
+        return false;
+      
+      return true;
+    }
+    
+    
+    public function dumpIfs(){
+      var_dump($this->interfaces);
+    }
+    
+    
+    /**
+     * Inform the module core that there is an implementation of a module's
+     * interface.
+     * NOTE: The implementator module will be loaded if it not already loaded.
+     *
+     * @return boolean true if the proccess was successful, false otherwise. 
+     */
+    public function registerImplementedInterface($providerName, $implementatorName){
+      // TODO : Pending implementation
+      $validProvider = $this->validateModuleName($providerName);
+      $implementator = $this->getModule($implementatorName);
+      if( !$validProvider || $implementator===false ) return false;
+      
+      if( !key_exists($providerName, $this->interfaces) )
+        $this->initInterfaceRecord($providerName);
+      
+      $this->interfaces[$providerName]['implemented'][$implementatorName] = 
+        $implementator->getImplementationVersions($providerName);
+        
+      return true;
+    }
+    
+    
+    // TODO: Pending commentation
+    // TODO: Consider deletion and integration of the leogic into the 
+    //        registerImplementedInterface and registerProvidedInterface 
+    //        methods.
+    public function loadInterfaces() {
+      // 'moduleName' => [
+        // 'provided' => ['ver1', 'ver2'],
+        // 'implemented' => [
+          // 'otherModule' => ['ver2', 'ver3'],
+        // ],
+        // 'loaded' => [
+          // 'moduleName' => ['ifInstance1','ifInstance2','ifInstance2'],
+        // ],
+      // ],
+      
+      // Loop through providers
+      foreach( $this->interfaces as $providerName=>&$definition ) {
+        $providedVersions = &$definition['provided'];
+        if( count($providedVersions) != 0 ) {
+          // Loop through implementations
+          foreach($definition['implemented'] as $implementatorName=>$versions){
+            // Loop through versions of an implementation
+            foreach($versions as $version) {
+              if( in_array($version, $providedVersions) ) {
+                
+                $this->getModule($providerName)->loadInterface();
+                
+                $implementator = $this->getModule($implementatorName);
+                $implementation = 
+                  $implementator->getImplementation($providerName, $version);
+                  
+                if( !in_array( $implementation, $definition['loaded'] ) )
+                  $definition['loaded'][] = $implementation;
+
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+  /**
+   * Returns the loaded implementations of an interface.
+   */
+  public function getImplementations($providerName) {
+    if( !isset($this->interfaces[$providerName]) ) 
+      return [];
+    
+    return $this->interfaces[$providerName]['loaded'];
+  }
 }
 
 
@@ -207,6 +350,18 @@ class ModulesCore
 */
 interface ModulesCoreModule {
   public function getModuleName();
+  public function getModuleVersion();
+  
+  /**
+   * Designates the interface implementations versions this module is 
+   * compatible with. i.e. If if an implementation of this modules 
+   * interface is provided, it must be of a version included in this
+   * list in order to work properly.
+   */
+  public function getCompatibility();
+  public function getImplementation($providingModule, $version=null );
+  public function getImplementationVersions($providingModule);
+  public function loadInterface();
   public function onLoad(ModulesCore $core);
   public function onLoadingDone(ModulesCore $core);
 }
