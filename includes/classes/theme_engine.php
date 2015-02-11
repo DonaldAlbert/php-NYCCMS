@@ -16,7 +16,8 @@ class ThemeEngine {
     protected static $instance;
 
     protected $activeTheme;
-    protected $theme_content;
+    protected $blockStack;
+    public $content;
 
 
 
@@ -32,6 +33,7 @@ class ThemeEngine {
     protected function init() {
         $this->activeTheme = 'default';
         $this->initRenderArray();
+        $this->blockStack = [];
     }
 
     protected function initRenderArray(){
@@ -41,9 +43,10 @@ class ThemeEngine {
                 'css' => [],
             ],
             'content' => [],
+            'blocks' => [],
         ];
 
-        $this->theme_content = $result;
+        $this->content = $result;
     }
 
     protected function getThemeRoot(){
@@ -60,6 +63,22 @@ class ThemeEngine {
 
     protected function publicThemeRoot() {
         return ThemeEngine::THEME_FOLDER . '/' . $this->activeTheme;
+    }
+
+    protected function renderPage($exitingPage) {
+        global $tc;
+        $tc = $this;
+        ob_start();
+        include($exitingPage);
+        ob_end_flush();
+    }
+
+    public function startBlock($name){
+
+    }
+
+    public function endBlock() {
+
     }
 
     public function validateThemeName($theme){
@@ -80,11 +99,11 @@ class ThemeEngine {
     }
 
     public function addCss($filename) {
-        $this->theme_content['theme']['css'][] = $filename;
+        $this->content['theme']['css'][] = $filename;
     }
 
     /**
-     * NOTE: This method resets the global variable $theme_content.
+     * NOTE: This method resets the global variable $tc.
      *
      * @param $themeFile
      * @param $content
@@ -94,13 +113,11 @@ class ThemeEngine {
     public function renderTheme($themeFile, $content){
         if( !$this->validatePageName($themeFile) ) return false;
 
-        global $theme_content;
-        $theme_content = $this->theme_content;
-        $theme_content['content'] = $content;
+        $this->content['content'] = $content;
 
         $themeFile = $this->getFilename($themeFile);
         if( $themeFile )
-            include($themeFile);
+            $this->renderPage($themeFile);
 //        else
 //            // TODO: Handle Missing theme file situation.
 

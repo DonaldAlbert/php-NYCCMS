@@ -26,31 +26,32 @@ require_once('includes/bootstrap.php');
 //    Redirection::Redirect($url);
 
 
-// // Template engine test code
-// require_once('includes/classes/theme_engine.php');
-// $my_content = [
-  // 'h2' => 'some more text',
-// ];
-// $te = ThemeEngine::getInstance();
-// $te->addCss('css/common.css');
-// $te->renderTheme('index', $my_content);
+ // Template engine test code
+ require_once('includes/classes/theme_engine.php');
+ $my_content = [
+   'h2' => 'some more text',
+ ];
+ $te = ThemeEngine::getInstance();
+ $te->addCss('css/common.css');
+$te->renderTheme('page1-blocks', $my_content);
+//$te->renderTheme('page1-blocks', $my_content);
 
 
-// Modules Core test code
-include('includes/classes/modules_core.php');
-$modMgr = ModulesCore::getInstance();
-$modMgr->loadModule('core.testing.TemplateEngine');
-$modMgr->loadModule('core.testing.TemplateEngine'); // Ignored, cause it is already loaded.
-$modMgr->loadModule('Module_Routing_Engine');
-$modMgr->loadInterfaces();
-$modMgr->dumpIfs();
-
-$tplMod = $modMgr->getModule('core.testing.TemplateEngine');
-$tplMod->templateMethod1('value1');
-$tplMod->templateMethod2('value1');
-
-$tplMod = $modMgr->getModule('Module_Routing_Engine');
-$tplMod->routingMethod1('value1');
+// // Modules Core test code
+// include('includes/classes/modules_core.php');
+// $modMgr = ModulesCore::getInstance();
+// $modMgr->loadModule('core.testing.TemplateEngine');
+// $modMgr->loadModule('core.testing.TemplateEngine'); // Ignored, cause it is already loaded.
+// $modMgr->loadModule('Module_Routing_Engine');
+// $modMgr->loadInterfaces();
+// $modMgr->dumpIfs();
+// 
+// $tplMod = $modMgr->getModule('core.testing.TemplateEngine');
+// $tplMod->templateMethod1('value1');
+// $tplMod->templateMethod2('value1');
+// 
+// $tplMod = $modMgr->getModule('Module_Routing_Engine');
+// $tplMod->routingMethod1('value1');
 
 
 
