@@ -12,7 +12,7 @@ $start_time = microtime(true);
 
 
 
-define('CMS_ROOT', $_SERVER['DOCUMENT_ROOT']);
+define( 'CMS_ROOT', dirname($_SERVER['SCRIPT_FILENAME']) );
 require_once('includes/bootstrap.php');
 //boot();
 
@@ -33,7 +33,8 @@ require_once('includes/bootstrap.php');
  ];
  $te = ThemeEngine::getInstance();
  $te->addCss('css/common.css');
-$te->renderTheme('page1-blocks', $my_content);
+ $te->renderTheme('page1-blocks', $my_content);
+ var_dump($te->content);
 //$te->renderTheme('page1-blocks', $my_content);
 
 

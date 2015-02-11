@@ -74,11 +74,19 @@ class ThemeEngine {
     }
 
     public function startBlock($name){
-
+      // TODO: Proper implementation pending.
+      if( in_array($name, $this->blockStack) )
+        throw new Exception("Doublicate blocks within the same template.(Blockname = $name)", 1);
+      
+      array_push($this->blockStack, $name);
+      ob_start();
     }
 
     public function endBlock() {
-
+      // TODO: Proper implementation pending.
+      $name = array_pop($this->blockStack);
+      $this->content['blocks'][$name] = ob_get_contents();
+      ob_end_clean();
     }
 
     public function validateThemeName($theme){
