@@ -1,10 +1,18 @@
 <?php
 
+namespace nyccms\core;
+
+if( !defined('CMS_ROOT') )  exit();
+
+
+
 class Engine {
   private static $instance = null;
   
+  private $modulesCore;
   
-  private function _construct() {}
+  
+  private function __construct() { }
   
   
   /**
@@ -12,8 +20,21 @@ class Engine {
    */
   public static function getInstance() {
     if( !self::$instance )
-      self::$instace = new Engine();
+      self::$instance = new Engine();
     
     return self::$instance;
   }
+  
+  
+  public function initiate() {
+    $this->modulesCore = new ModulesCore(CMS_ROOT.'/core/modules',
+      CMS_ROOT.'/expansions/modules');
+  }
+  
+  
+  public function getModulesCore() {
+    return $this->modulesCore;
+  }
+  
+  
 }

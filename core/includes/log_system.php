@@ -1,7 +1,9 @@
 <?php
 
-
 namespace nyccms\core;
+
+if( !defined('CMS_ROOT') )  exit();
+
 
 /**
  * This is the main logging facility of the NYCCMS.
