@@ -9,10 +9,6 @@
 namespace nyccms\core;
  
 
-/*
- * TODO: Make getModuleClass and getModuleNamespace static.
- */    
-
  
  
 /**
@@ -84,7 +80,7 @@ class ModulesCore
 
     /**
      * The constructor of the class initializes the directories where the modules are
-     * found. The given directories are appended with the value fo
+     * found. 
      */
     public function __construct($coreDir, $expDir = '') {
         if( !is_dir($coreDir) )
@@ -115,9 +111,36 @@ class ModulesCore
     
     /**
      * Use this method to get the module's main class fully classified name.
+     * 
+     * @param String $modName The mane of the module in the form of 
+     *  "package.package.Class".
+     * 
+     * @return String the name of the module's main class 
+   *    e.g. '\package\package\Class'.
      */
     public static function getModuleClass($modName) {
       return str_replace('.', '\\', $modName);
+    }
+
+
+    /**
+     * This method does the opposite of the getModuleClass method. It gets
+     * the name of a class (or an object) and returns the possible name of the 
+     * module that could have generated this class.
+     * e.g. "\package\package\Class" -> "package.package.Class"
+     * 
+     * @param mixed $module Either a String with the name of the module or an
+     *  object form which the class name will be used as an input.
+     * 
+     * @return String The possible name of the module that corresponds to this 
+     *  class. 
+     */
+    public static function getModuleName($module) {
+      if( !is_string($module) ) {
+        $module = get_class($module);
+      }
+      
+      return str_replace('\\','.', $module);
     }
     
     
@@ -321,9 +344,7 @@ class ModulesCore
 * An interface that all the modules should implement.
 */
 interface ModulesCoreModule {
-  public function getModuleName();
   public function getModuleVersion();
   public function onLoad(ModulesCore $core);
-  public function onLoadingDone(ModulesCore $core);
 }
 

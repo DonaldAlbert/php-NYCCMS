@@ -21,48 +21,15 @@ class Logger {
   
   private static $logger = null;
   
-  private $logginLvl = 0; //Log nothing
-  
-  
-    
-  private static function getInstance() {
-    if( !$logger )
-      self::$logger = new Logger(self::WARNING);
-    
-    return self::$logger;
-  }
-  
-  
-  protected static function getLogger() {
-    return self::$logger;
-  }
-  
-  
-  public static function setLogger(Logger $logger) {
-    if( self::$logger ) 
-      self::log('Changing logger implementation.', self::INFO);
-    
-    self::$logger = $logger;
-  }
-  
-  
-  public static function loggerEquals(Logger $logger) {
-    return (self::$logger === $logger);
-  }
-  
-  
-  public static function log($message, $severity) {
-    self::getInstance()->log_msg($message, severity);
-  }
-  
+  private $loggingLvl = 0; //Log nothing
   
   public function Logger($loggingLevel) {
     $this->logginLvl = $loggingLevel;
   }
   
   
-  public function log_msg($message, $severity) {
-    if( $severity > $this->logginLvl)
+  public function log($message, $severity) {
+    if( $severity > $this->loggingLvl)
       return false;
 
     switch ($severity) {
