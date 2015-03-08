@@ -1,6 +1,7 @@
 <?php
 
 namespace nyccms\modules;
+use nyccms\core\Engine as Engine;
 
 if( !defined('CMS_ROOT') )  exit();
 

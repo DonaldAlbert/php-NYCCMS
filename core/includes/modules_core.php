@@ -285,14 +285,13 @@ class ModulesCore
     /**
     * Loads the Main.php script of a module. This method also invokes the 
     * module's onLoad method.
-    * TODO: Implement failsafes for possible errors during new module import.
     * 
     * @param $modName The module name.
     * @return boolean True if the script was included successfully.
     */
     public function loadModule($modName)
     {
-      if( !array_key_exists($modName, $this->modules) &&
+      if( !key_exists($modName, $this->modules) &&
           self::validateModuleName($modName) &&
           $this->moduleExists($modName) 
       ) 
@@ -309,6 +308,7 @@ class ModulesCore
           $this->modules[$modName]->onLoad($this);
         } catch (\Exception $e) {}
         
+        Engine::log_info('Module "'.$modName.'" loaded.');
         return True;
       }
       
@@ -328,7 +328,7 @@ class ModulesCore
     */
     public function getModule($modName)
     {
-      if( array_key_exists($modName, $this->modules) )
+      if( key_exists($modName, $this->modules) )
         return $this->modules[$modName];
       elseif( $this->lazyLoadModules &&
               $this->loadModule($modName) 
@@ -336,6 +336,16 @@ class ModulesCore
         return $this->modules[$modName];
     
       return false;
+    }
+
+
+    /**
+     * Use this method to check if a module is already loaded.
+     * 
+     * @return Boolean True if the module is loaded, false otherwise.
+     */
+    public function isLoaded($moduleName) {
+      return key_exists($moduleName, $this->modules);
     }
 }
 

@@ -10,11 +10,15 @@ require_once('engine.php');
 
 // Step 2 - MoculesCore fire-up / Modules loading
 use nyccms\core\Engine as Engine;
+//Engine::initiate_production();
 Engine::initiate_debug();
-$module = Engine::getModulesCore()->getModule('nyccms.modules.Router');
-$module->parseRequest();
+$core = Engine::getModulesCore();
+$eventHorizon = $core->getModule('nyccms.modules.EventManager');
+$router = $core->getModule('nyccms.modules.Router');
 
-
+$eventHorizon->registerEvent('parse-url');
+$eventHorizon->bindEvent('parse-url', $router, 'parseRequest');
+$eventHorizon->triggerEvent('parse-url');
 
 // Step 3 - URL Parsing / Routing Actions
 

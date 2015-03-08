@@ -14,6 +14,11 @@ if( !defined('CMS_ROOT') )  exit();
 class Engine {
   private static $modulesCore;
   private static $logger;
+  private static $events;
+  private static $themes;
+  private static $router;
+  private static $users;
+  private static $settings;
   
   private function __construct() { }
   
@@ -33,9 +38,9 @@ class Engine {
       CMS_ROOT.'/expansions/modules');
   }
   
-  public static function setLogger(Logger $logger) {
+  public static function setLogger(Logger $logger, $message='') {
     if( self::$logger ) 
-      self::log_info('Changing logger implementation.');
+      self::log_info('Changing logger mechanism.'+$message);
     
     self::$logger = $logger;
   }
@@ -53,6 +58,12 @@ class Engine {
   
   public static function log_error($message) {
     self::$logger->log($message, Logger::ERROR);
+  }
+  
+  
+  public static function log_fatal($message) {
+    self::$logger->log('FATAL: '.$message, Logger::ERROR);
+    exit();
   }
   
   
