@@ -20,10 +20,9 @@ class Logger {
   const LOG_FILE= 'nyccms.log';
   
   
-  private static $logger = null;
-  
   private $loggingLvl = 0; //Log nothing  
   private $signature;
+  private $logFile = null;
   
   
   private static function generateSignature() {
@@ -34,6 +33,7 @@ class Logger {
   public function __construct($loggingLevel) {
     $this->loggingLvl = $loggingLevel;
     $this->signature  = self::generateSignature();
+    $this->logFile    = CMS_ROOT.'/'.self::LOG_FILE;
   }
   
   
@@ -52,11 +52,11 @@ class Logger {
             $severity = 'info';
             break;
         default:
-            $severity = 'unknown';
+            $severity = '???';
             break;
     }
     
     $message = "NYCCMS $severity\t$this->signature\t".date('c')."\t$message\n";
-    return error_log( $message, 3, CMS_ROOT.'/'.self::LOG_FILE);
+    return error_log( $message, 3, $this->logFile);
   }
 }
