@@ -15,13 +15,15 @@ class Engine {
   private static $modulesCore;
   private static $logger;
   private static $events;
+  private static $settings;
   private static $themes;
   private static $router;
   private static $users;
-  private static $settings;
   
   private function __construct() { }
   
+  
+  // --- Engine Initiators ----------------------------------------------------
   
   public static function initiate_production() {
     self::$logger = new Logger(Logger::WARNING);
@@ -37,6 +39,9 @@ class Engine {
     self::$modulesCore = new ModulesCore(CMS_ROOT.'/core/modules',
       CMS_ROOT.'/expansions/modules');
   }
+
+  
+  // --- Logging facilities ---------------------------------------------------
   
   public static function setLogger(Logger $logger, $message='') {
     if( self::$logger ) 
@@ -67,9 +72,37 @@ class Engine {
   }
   
   
+  // --- Base modules loaders -------------------------------------------------
+  
+  public static function loadEventEngine() {
+    if( !self::$events ) {
+      $done = self::$modulesCore->loadModule('nyccms.modules.EventManager');
+      if( $done )
+        self::$events = 
+          self::$modulesCore->getModule('nyccms.modules.EventManager');
+    }
+  }
+  
+    
+  // public static function loadEventEngine() {
+    // if( !self::$events ) {
+      // $done = self::$modulesCore->loadModule('nyccms.modules.EventManager');
+      // if( $done )
+        // self::$events = 
+          // self::$modulesCore->getModule('nyccms.modules.EventManager');
+    // }
+  // }
+
+
+  // --- Read-Only getters ----------------------------------------------------
+  
   public static function getModulesCore() {
     return self::$modulesCore;
   }
   
+  
+  public static function getEventEngine() {
+    return self::$events;
+  }
   
 }
