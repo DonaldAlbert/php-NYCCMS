@@ -25,19 +25,31 @@ class Engine {
   
   // --- Engine Initiators ----------------------------------------------------
   
+  
+  private static function initiate($settingsFile, $loggingLvl) {
+    self::$settings = new SettingCore($settingsFile);
+    $ok = self::$settings->loadFile();
+    if( !$ok ) {
+      $msg = self::$settings->getSettingsFile();
+      new Exception( $msg . ' file could not be read.' );
+    }
+    
+    self::$logger = new Logger($loggingLvl);
+    self::log_info('Engine initiate_debug');
+    
+    $coreDir = '/' . self::$settings->get('coreModulesDirectory');
+    $expDir  = '/' . self::$settings->get('expansionModulesDirectory');
+    self::$modulesCore = new ModulesCore(CMS_ROOT.$coreDir, CMS_ROOT.$expDir);
+  }
+
+  
   public static function initiate_production() {
-    self::$logger = new Logger(Logger::WARNING);
-    self::log_info('Engine initiate_production');
-    self::$modulesCore = new ModulesCore(CMS_ROOT.'/core/modules',
-      CMS_ROOT.'/expansions/modules');
+    self::initiate('core/settings/settings.php', Logger::WARNING);
   }
   
   
   public static function initiate_debug() {
-    self::$logger = new Logger(Logger::INFO);
-    self::log_info('Engine initiate_production');
-    self::$modulesCore = new ModulesCore(CMS_ROOT.'/core/modules',
-      CMS_ROOT.'/expansions/modules');
+    self::initiate('core/settings/settings.php', Logger::INFO);
   }
 
   
@@ -103,6 +115,11 @@ class Engine {
   
   public static function getEventEngine() {
     return self::$events;
+  }
+  
+  
+  public static function getSettingsCore() {
+    return self::$settings;
   }
   
 }
