@@ -84,6 +84,15 @@ class Engine {
   
   // --- Logging facilities ---------------------------------------------------
   
+  /**
+   * Use this method to change the Logger object that is responsible for the 
+   * logging facilities of the CMS.
+   * 
+   * @param Logger $logger The new logger object to be used.
+   * @param String $message Optional. A message to be logged with the previous 
+   *  logger. You may use this message to indicate the reason for the logger
+   *  change.
+   */
   public static function setLogger(Logger $logger, $message='') {
     if( self::$logger ) 
       self::log_info('Changing logger mechanism.'+$message);
@@ -91,22 +100,52 @@ class Engine {
     self::$logger = $logger;
   }
   
-  
+
+  /**
+   * One of the main logging methods. Use this method to log information level
+   * messages.
+   * NOTE: This method might cause a PHP warning if the log file is not accessible.
+   * 
+   * @param String $message The message to be logged.
+   */
   public static function log_info($message) {
     self::$logger->log($message, Logger::INFO);
   }
   
   
+  /**
+   * One of the main logging methods. Use this method to log warning level
+   * messages.
+   * NOTE: This method might cause a PHP warning if the log file is not accessible.
+   * 
+   * @param String $message The message to be logged.
+   */
   public static function log_warn($message) {
     self::$logger->log($message, Logger::WARNING);
   }
   
   
+  /**
+   * One of the main logging methods. Use this method to log error level
+   * messages.
+   * NOTE: This method might cause a PHP warning if the log file is not accessible.
+   * 
+   * @param String $message The message to be logged.
+   */
   public static function log_error($message) {
     self::$logger->log($message, Logger::ERROR);
   }
   
   
+  /**
+   * One of the main logging methods. Use this method to log error level
+   * messages. Additionally this method will force the termination of the 
+   * script. You may use this method to log fatal events and force script 
+   * termination on one call.
+   * NOTE: This method might cause a PHP warning if the log file is not accessible.
+   * 
+   * @param String $message The message to be logged.
+   */
   public static function log_fatal($message) {
     self::$logger->log('FATAL: '.$message, Logger::ERROR);
     exit();
