@@ -2,6 +2,8 @@
 if( !defined('CMS_ROOT') )  exit();
 
 
+$start_time = microtime(true);
+
 // Step 1 - Core scripts inclusion/requisition
 require_once('logger.php');
 require_once('engine.php');
@@ -24,3 +26,7 @@ $router = $core->getModule('nyccms.modules.Router');
 
 
 // Step 4 - Rendering Action 
+
+
+$elapsed_time_ms = (microtime(true) - $start_time)*1000;
+Engine::log_info('Elapsed Time: '.round($elapsed_time_ms, 2).' ms');
