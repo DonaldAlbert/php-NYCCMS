@@ -50,8 +50,7 @@ class Logger {
     
     $failover         = CMS_ROOT . '/' . self::LOG_FILE;
     $this->logFile    = Engine::getSettingsCore()->get('logfile', $failover);
-    if( substr($this->logFile, 0, 1) !== '/' )
-      $this->logFile  = CMS_ROOT . '/' . $this->logFile; 
+    $this->logFile    = Engine::normalizePath($this->logFile); 
   }
   
   

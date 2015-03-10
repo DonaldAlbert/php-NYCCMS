@@ -152,7 +152,7 @@ class Engine {
   }
   
   
-  // --- Base modules loaders -------------------------------------------------
+  // --- Base module loaders -------------------------------------------------
   
   /**
    * A convenience menthod that is used to load the nyccms.modules.EventManager
@@ -178,18 +178,40 @@ class Engine {
   // }
 
 
-  // --- Read-Only getters ----------------------------------------------------
+  // --- Convenience Methods ----------------------------------------------------
   
+  /**
+   * This method takes a path (either relative to the CMS's root or absolute) and
+   * converts it to absolute.
+   * 
+   * @param String $path The path we want to normalize.
+   * 
+   * @return String The absolute form of the path given.
+   */
+  public static function normalizePath($path) {
+    if( substr($path, 0, 1) !== '/' )
+      return CMS_ROOT . '/' . $path;
+    else
+      return $path; 
+  }
+  
+  /**
+   * A convenience method that returns the pre-loaded (by an initiate method)
+   * instance of the ModulesCore class.
+   * 
+   * @return ModulesCore The instance of the main engine's ModuleCore instance. 
+   */
   public static function getModulesCore() {
     return self::$modulesCore;
   }
   
   
-  public static function getEventEngine() {
-    return self::$events;
-  }
-  
-  
+  /**
+   * A convenience method that returns the pre-loaded (by an initiate method)
+   * instance of the ModulesCore class.
+   * 
+   * @return ModulesCore The instance of the main engine's ModuleCore instance. 
+   */
   public static function getSettingsCore() {
     return self::$settings;
   }
