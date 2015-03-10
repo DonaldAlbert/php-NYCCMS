@@ -154,6 +154,10 @@ class Engine {
   
   // --- Base modules loaders -------------------------------------------------
   
+  /**
+   * A convenience menthod that is used to load the nyccms.modules.EventManager
+   * module.
+   */
   public static function loadEventEngine() {
     if( !self::$events ) {
       $done = self::$modulesCore->loadModule('nyccms.modules.EventManager');
