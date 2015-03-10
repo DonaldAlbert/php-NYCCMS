@@ -7,11 +7,43 @@
  */
  
 namespace nyccms\modules;
+use nyccms\core\Engine as Engine;
 
 if( !defined('CMS_ROOT') )  exit();
 
 
-class ThemeEngine {
+
+/*
+ * $themeEngine = ...;
+ * 
+ * 
+ * --- CASE 1 --------------------------------------------
+ * 
+ * $themeEngine->enableTheme('theme1');
+ * $themeEngine->render('page1', $data);
+ * 
+ * --- CASE 2 --------------------------------------------
+ * $themeEngine->enableTheme('theme1');
+ * $themeEngine->setBlockData('mainMenu', $blockData);
+ * $themeEngine->render('page1', $genericData);
+ * 
+ * --- CASE 3 --------------------------------------------
+ * $themeEngine->enableTheme('theme1');
+ * $themeEngine->appendBlockHtml('mainMenu', $html);
+ * $themeEngine->render('page1', $genericData); 
+ * 
+ */
+
+
+
+
+
+
+
+
+
+
+class ThemeEngine implements \nyccms\core\ModulesCoreModule {
 
     /**
      * Relative to the CMS root.
@@ -26,7 +58,7 @@ class ThemeEngine {
 
 
     private function __construct($themesDir) { 
-      $this->themesDir = $themesDir;
+      $this->themesDir = Engine::normalizePath($themesDir);
       $this->activeTheme = 'default';
       $this->initRenderArray();
       $this->blockStack = [];
