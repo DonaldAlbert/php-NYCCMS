@@ -19,6 +19,10 @@ $core = Engine::getModulesCore();
 $eventHorizon = $core->getModule('nyccms.modules.EventManager');
 $router = $core->getModule('nyccms.modules.Router');
 
+//Testing ThemeManager
+$themer = $core->getModule('nyccms.modules.ThemeManager');
+$themer->renderTheme('index', ['value1'=>'justTesting']);
+
 
 
 // Step 3 - URL Parsing / Routing Actions

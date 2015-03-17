@@ -9,4 +9,5 @@ $settings = [
   'coreModulesDirectory' => 'core/modules/',
   'expansionModulesDirectory' => 'expansions/modules',
   'logfile' => 'nyccms.log',
+  'public_root' => '/',
 ];

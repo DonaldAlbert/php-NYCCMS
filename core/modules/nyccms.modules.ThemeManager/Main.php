@@ -35,7 +35,7 @@ require_once('ThemeHandle.php');
  *
  */
 
-class ThemeEngine implements \nyccms\core\ModulesCoreModule {
+class ThemeManager implements \nyccms\core\ModulesCoreModule {
 
   /**
    * Relative to the CMS root.
@@ -57,14 +57,14 @@ class ThemeEngine implements \nyccms\core\ModulesCoreModule {
   }
 
 
-  private function __construct($themesDir) {
-    $this -> themesDir = Engine::normalizePath($themesDir);
+  public function __construct() {
+    $this -> themesDir = Engine::normalizePath('themes');
     $this -> activeTheme = 'default';
   }
 
 
   private function getThemeRoot() {
-    return $this -> themeDir . '/' . $this -> activeTheme;
+    return $this -> themesDir . '/' . $this -> activeTheme;
   }
 
 
