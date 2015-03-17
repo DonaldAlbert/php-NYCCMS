@@ -5,162 +5,138 @@
  * Date: 2/9/2015
  * Time: 6:58 PM
  */
- 
+
 namespace nyccms\modules;
 use nyccms\core\Engine as Engine;
 
-if( !defined('CMS_ROOT') )  exit();
+if (!defined('CMS_ROOT'))
+  exit();
 
-
+require_once('ThemeHandle.php');
 
 /*
  * $themeEngine = ...;
- * 
- * 
+ *
+ *
  * --- CASE 1 --------------------------------------------
- * 
+ *
  * $themeEngine->enableTheme('theme1');
  * $themeEngine->render('page1', $data);
- * 
+ *
  * --- CASE 2 --------------------------------------------
  * $themeEngine->enableTheme('theme1');
  * $themeEngine->setBlockData('mainMenu', $blockData);
  * $themeEngine->render('page1', $genericData);
- * 
+ *
  * --- CASE 3 --------------------------------------------
  * $themeEngine->enableTheme('theme1');
- * $themeEngine->appendBlockHtml('mainMenu', $html);
- * $themeEngine->render('page1', $genericData); 
- * 
+ * $themeEngine->appendBlockHtml('mainMenu', 'blockToAppend');
+ * $themeEngine->render('page1', $genericData);
+ *
  */
-
-
-
-
-
-
-
-
-
 
 class ThemeEngine implements \nyccms\core\ModulesCoreModule {
 
-    /**
-     * Relative to the CMS root.
-     */
-    const THEME_FOLDER = 'themes'; // TODO: To be deleted;
+  /**
+   * Relative to the CMS root.
+   */
+  const THEME_FOLDER = 'themes';
+  // TODO: To be deleted;
 
-    private $themesDir;
-    private $activeTheme;
-    private $blockStack;
-    public $content;
-
+  private $themesDir;
+  private $activeTheme;
 
 
-    private function __construct($themesDir) { 
-      $this->themesDir = Engine::normalizePath($themesDir);
-      $this->activeTheme = 'default';
-      $this->initRenderArray();
-      $this->blockStack = [];
-    }
+  public static function validateThemeName($theme) {
+    return true;
+  }
+  
 
-    private function initRenderArray(){
-        $result = [
-            'theme' => [
-                'root' => $this->publicThemeRoot(),
-                'css' => [],
-            ],
-            'content' => [],
-            'blocks' => [],
-        ];
+  public static function validatePageName($themePage) {
+    return true;
+  }
 
-        $this->content = $result;
-    }
+
+  private function __construct($themesDir) {
+    $this -> themesDir = Engine::normalizePath($themesDir);
+    $this -> activeTheme = 'default';
+  }
+
+
+  private function getThemeRoot() {
+    return $this -> themeDir . '/' . $this -> activeTheme;
+  }
+
+
+  private function getFilename($themePage) {
+    $fileName = $this -> getThemeRoot() . '/' . $themePage . '.php';
+    if (file_exists($fileName))
+      return $fileName;
+    else
+      return '';
+  }
+
+  
+  protected function renderPage($exitingPage, $content) {
+    global $tc;
     
-    public function getModuleVersion() { return '0.1';}
+    ob_start();
     
-    public function onLoad(\nyccms\core\ModulesCore $core) { return; }
+    $tc = new ThemeHandle($this);
+    $tc -> setContent($content);
+    include ($exitingPage);
+    unset($tc);
+    
+    ob_end_flush();
+  }
 
-    protected function getThemeRoot(){
-        return CMS_ROOT . '/' . ThemeEngine::THEME_FOLDER . '/' . $this->activeTheme;
+
+  public function getModuleVersion() {
+    return '0.1';
+  }
+
+
+  public function onLoad(\nyccms\core\ModulesCore $core) {
+    return;
+  }
+
+
+  public function setTheme($themeName) {
+    if ($this -> validateThemeName($themeName)) {
+      $this -> activeTheme = $themeName;
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  
+  public function getTheme() {
+    return $this -> activeTheme;
+  }
+
+
+  /**
+   * NOTE: This method resets the global variable $tc.
+   *
+   * @param $themeFile
+   * @param $content
+   *
+   * @return
+   */
+  public function renderTheme($themeFile, $content) {
+    if (!$this -> validatePageName($themeFile))
+      return false;
+
+
+    $themeFile = $this -> getFilename($themeFile);
+    if ($themeFile) {
+      $this -> renderPage($themeFile, $content);
+      return true;
+    } else {
+      return false;
     }
 
-    protected function getFilename($themePage) {
-        $fileName = $this->getThemeRoot() . '/' . $themePage . '.php';
-        if( file_exists($fileName) )
-            return $fileName;
-        else
-            return '';
-    }
+  }
 
-    protected function publicThemeRoot() {
-        return ThemeEngine::THEME_FOLDER . '/' . $this->activeTheme;
-    }
-
-    protected function renderPage($exitingPage) {
-        global $tc;
-        $tc = $this;
-        ob_start();
-        include($exitingPage);
-        ob_end_flush();
-    }
-
-    public function startBlock($name){
-      // TODO: Proper implementation pending.
-      if( in_array($name, $this->blockStack) )
-        throw new Exception("Doublicate blocks within the same template.(Blockname = $name)", 1);
-      
-      array_push($this->blockStack, $name);
-      ob_start();
-    }
-
-    public function endBlock() {
-      // TODO: Proper implementation pending.
-      $name = array_pop($this->blockStack);
-      $this->content['blocks'][$name] = ob_get_contents();
-      ob_end_clean();
-    }
-
-    public function validateThemeName($theme){
-        return true;
-    }
-
-    public function validatePageName($themePage) {
-        return true;
-    }
-
-    public function setTheme($themeName) {
-        if( $this->validateThemeName($themeName) ) {
-            $this->activeTheme = $themeName;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function addCss($filename) {
-        $this->content['theme']['css'][] = $filename;
-    }
-
-    /**
-     * NOTE: This method resets the global variable $tc.
-     *
-     * @param $themeFile
-     * @param $content
-     *
-     * @return
-     */
-    public function renderTheme($themeFile, $content){
-        if( !$this->validatePageName($themeFile) ) return false;
-
-        $this->content['content'] = $content;
-
-        $themeFile = $this->getFilename($themeFile);
-        if( $themeFile )
-            $this->renderPage($themeFile);
-//        else
-//            // TODO: Handle Missing theme file situation.
-
-        return true;
-    }
-} 
+}

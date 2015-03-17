@@ -56,7 +56,6 @@ class Engine {
     }
     
     self::$logger = new Logger($loggingLvl);
-    self::log_info('Engine initiate_debug');
     
     $coreDir = '/' . self::$settings->get('coreModulesDirectory');
     $expDir  = '/' . self::$settings->get('expansionModulesDirectory');
@@ -70,6 +69,7 @@ class Engine {
    */
   public static function initiate_production() {
     self::initiate('core/settings/settings.php', Logger::WARNING);
+    self::log_info('Engine initiate_production');
   }
   
   
@@ -79,6 +79,7 @@ class Engine {
    */
   public static function initiate_debug() {
     self::initiate('core/settings/settings.php', Logger::INFO);
+    self::log_info('Engine initiate_debug');
   }
 
   
