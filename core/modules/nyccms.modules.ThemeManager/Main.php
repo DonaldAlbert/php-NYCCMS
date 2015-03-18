@@ -38,10 +38,12 @@ require_once('ThemeHandle.php');
 class ThemeManager implements \nyccms\core\ModulesCoreModule {
 
   /**
-   * Relative to the CMS root.
+   * Relative to the theme's root.
    */
-  const THEME_FOLDER = 'themes';
-  // TODO: To be deleted;
+  const STATIC_DIR = 'static';
+  const BLOCKS_DIR = 'blocks';
+  const SKELETONS_DIR = 'skeletons';
+  const PAGES_DIR = 'pages';
 
   private $themesDir;
   private $activeTheme;
@@ -66,10 +68,30 @@ class ThemeManager implements \nyccms\core\ModulesCoreModule {
   private function getThemeRoot() {
     return $this -> themesDir . '/' . $this -> activeTheme;
   }
+  
+  
+  private function getBlocksDir() {
+    return $this->getThemeRoot() . '/' . self::BLOCKS_DIR;
+  }
+  
+  
+  private function getSkeletonsDir() {
+    return $this->getThemeRoot() . '/' . self::SKELETONS_DIR;
+  }
+  
+  
+  private function getStaticDir() {
+    return $this->getThemeRoot() . '/' . self::STATIC_DIR;
+  }
+  
+  
+  private function getPagesDir() {
+    return $this->getThemeRoot() . '/' . self::PAGES_DIR;
+  }
 
 
   private function getFilename($themePage) {
-    $fileName = $this -> getThemeRoot() . '/' . $themePage . '.php';
+    $fileName = $this -> getPagesDir() . '/' . $themePage . '.php';
     if (file_exists($fileName))
       return $fileName;
     else
@@ -77,7 +99,7 @@ class ThemeManager implements \nyccms\core\ModulesCoreModule {
   }
 
   
-  protected function renderPage($exitingPage, $content) {
+  private function renderPage($exitingPage, $content) {
     global $tc;
     
     ob_start();
