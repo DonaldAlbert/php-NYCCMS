@@ -9,7 +9,9 @@
         <h1>Hello World<small>index</small></h1>
 
         <h2><?= $tc->getContent('value1'); ?></h2>
+        
+        <p><?php $tc->startBlock('block01');?>Defualt block01<?php $tc->endBlock(); ?></p>
 
-        <footer><?php include('partials/footer.php'); ?></footer>
+        <footer>Inline html footer</footer>
     </body>
 </html>

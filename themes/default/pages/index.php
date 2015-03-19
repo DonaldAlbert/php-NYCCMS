@@ -1,15 +1,11 @@
-<!DOCTYPE html>
+<?php $tc->extend('skel-01'); ?>
 
-<html>
-    <head>
-        <title>Demo default theme</title>
-        <link rel="stylesheet" type="text/css" href="<?= '""';//$css; ?>" media="screen">
-    </head>
-    <body>
-        <h1>Hello World<small>index</small></h1>
-
-        <h2><?= $tc->getContent('value1'); ?></h2>
-
-        <footer><?php //include('partials/footer.php'); // To be replaced by blocks ?></footer>
-    </body>
-</html>
+<?php $tc->startBlock('block01'); ?>
+  Just testing simple blocks functionality 1.
+<?php $tc->endBlock(); ?>
+<?php $tc->startBlock('block01'); ?>
+  Just testing simple blocks functionality 2.
+<?php $tc->endBlock(); ?>
+<?php $tc->startBlock('block01'); ?>
+  Just testing simple blocks functionality 3.
+<?php $tc->endBlock(); ?>
